@@ -1,0 +1,146 @@
+<html>    
+<head>
+<title>Swappy Squares</title>
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0px;
+            border: 0;
+            overflow: hidden; /*  Disable scrollbars */
+            display: block;  /* No floating content on sides */
+        }
+    </style>
+</head>
+
+<body>
+<canvas id='canvas' style = 'position: absolute; left: 0px; top: 0px;' ></canvas>
+
+<script src = "Scripts/levels.js"></script>
+    
+<script>
+    //AudioFiles
+        var music = new Audio("Audio/menuAudio.mp3");
+      
+        var cvs = document.getElementById('canvas');
+        var ctx = cvs.getContext('2d');
+
+        var bgImage = new Image();
+        bgImage.src = "Images/Background.png";
+        var squareSize;
+
+        var ssImage = new Image();
+        ssImage.src = "Images/SS.png";
+
+    //Variables
+        var squareSize;
+        var topLeftx;
+        var topLefty;
+        var boxNo = 11;
+        var boxSize;
+        var levelCount = 1;
+        var loader = 0;
+        var player;
+        var playeri;
+        var playerj;
+        var level;
+        var player_colour = 'red';
+
+        var walls = new Array(0);
+
+        var centreX;
+        var centreY;
+
+        var isLeft = false;
+        var isRight = false;
+        var isSpace = false;
+        var isDown = false;
+           
+    //Register resize event
+        window.addEventListener('resize', resizeCanvas, false);
+    //Run initial 'resize' to get screen size and draw
+        resizeCanvas();
+
+        function level_check(){
+        if(levelCount == 1){
+            level = levelOne.slice();
+        }
+        var levelRows = level.length;
+        var levelCols = level[0].length;
+        }
+            
+                
+    // Draw game.                 
+    function draw() {
+        if(loader==0){
+            level_check();
+            loader = 1;
+        }
+        //Draw background
+        ctx.drawImage(bgImage, topLeftx, topLefty, squareSize, squareSize);
+
+        //Draw swappy squares
+        ctx.drawImage(ssImage, topLeftx+(boxNo/2*boxSize)-(boxSize*3/2), topLefty, boxSize*3, boxSize);
+        
+        //Draw transparent game background
+        ctx.fillStyle = 'rgba(225,225,225,0.5)';
+        ctx.fillRect(topLeftx+boxSize, topLefty+boxSize, squareSize-2*boxSize, squareSize-2*boxSize);
+
+        //Draw game box outline
+        ctx.strokeStyle = 'black';
+        ctx.lineWidth = '5';
+        ctx.strokeRect(topLeftx+boxSize, topLefty+boxSize, squareSize-2*boxSize, squareSize-2*boxSize);
+
+        //ctx.fillStyle = player_colour;
+        //for(var i = 0; i<levelRows; i++){
+        //for(var j = 0; j<levelCols;j++){
+            //if(level[i][j]==8){
+            //playeri = 4-i;
+            //playerj = 4-j;
+            //player = fillRect(centreX, centreY, boxSize, boxSize);
+            //}
+
+
+        }
+        
+            // Runs each time the DOM window resize event fires.
+            // Resets the canvas dimensions to match window,
+            // then draws the new borders accordingly.
+    function resizeCanvas() {
+        cvs.width = window.innerWidth;
+        cvs.height = window.innerHeight;
+            
+        if(window.innerWidth>window.innerHeight){
+            squareSize = window.innerHeight; 
+            topLeftx = (window.innerWidth-window.innerHeight)/2;
+            topLefty = 0;
+            }
+        else{
+            squareSize = window.innerWidth; 
+            topLeftx = 0;
+            topLefty = (window.innerHeight-window.innerWidth)/2;
+            }
+
+                //Sets size of the Swappy Squares
+            boxSize = squareSize/boxNo;
+            centreX = topLeftx+((squareSize/2)-(boxSize/2));
+            centreY = topLefty+((squareSize/2)-(boxSize/2));
+
+                draw();
+
+            }
+
+
+    function swap(x1,y1,x2,y2){
+        var temp = level[y1][x1];
+        level[y1][x1] = level[y2][x2];
+        level[y2][x2] = temp;
+        }
+
+
+    let game = setInterval(draw,100);
+    </script>
+    
+</body>
+
+</html>
