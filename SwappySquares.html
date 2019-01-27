@@ -42,8 +42,8 @@
     var levelCount = 1;
     var loader = 0;
     var player;
-    var playeri;
-    var playerj;
+    var playeri; //i is rows
+    var playerj; //j is columns
     var level;
     var levelRows;
     var levelCols;
@@ -144,10 +144,10 @@
         for(var i = 0; i<levelRows; i++){
 	        for(var j = 0; j<levelCols;j++){
 	            if(level[i][j]==8){
-                    var playeri = i;
-                    var playerj = j;
-		            var offseti = i-5;
-		            var offsetj = j-5;
+                    playeri = i;
+                    playerj = j;
+		            offseti = i-5;
+		            offsetj = j-5;
                     ctx.fillRect(centreX, centreY, boxSize, boxSize);
 
                     ctx.strokeStyle = 'rgb(255,223,0)';
@@ -205,15 +205,15 @@
 
 
     function movementLogic(){
-        console.log(playeri);
-        console.log(playerj);
+        console.log("playeri = ", playeri);
+        console.log("playerj = ", playerj);
 
-        if(isRight && player_colour == 'red' && level[playerj][playeri+1]==1){
-            swap(playerj,playeri,playerj,playeri+1);
+        if(isRight && player_colour == 'red' && level[playeri][playerj+1]==1){
+            swap(playeri,playerj,playeri,playerj+1);
         }
 
-        if(isLeft && player_colour == 'red' && level[playerj][playeri-1]==1){
-                swap(playerj,playeri,playerj,playeri-1);
+        if(isLeft && player_colour == 'red' && level[playeri][playerj-1]==1){
+                swap(playeri,playerj,playeri,playerj-1);
         }
     }
     
