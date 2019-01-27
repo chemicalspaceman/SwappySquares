@@ -20,55 +20,95 @@
     
 <script>
     //AudioFiles
-        var music = new Audio("Audio/menuAudio.mp3");
-      
-        var cvs = document.getElementById('canvas');
-        var ctx = cvs.getContext('2d');
+    var music = new Audio("Audio/menuAudio.mp3");
+  
+    var cvs = document.getElementById('canvas');
+    var ctx = cvs.getContext('2d');
 
-        var bgImage = new Image();
-        bgImage.src = "Images/Background.png";
-        var squareSize;
 
-        var ssImage = new Image();
-        ssImage.src = "Images/SS.png";
+    var bgImage = new Image();
+    bgImage.src = "Images/Background.png";
+    var squareSize;
+
+    var ssImage = new Image();
+    ssImage.src = "Images/SS.png";
 
     //Variables
-        var squareSize;
-        var topLeftx;
-        var topLefty;
-        var boxNo = 11;
-        var boxSize;
-        var levelCount = 1;
-        var loader = 0;
-        var player;
-        var playeri;
-        var playerj;
-        var level;
-        var player_colour = 'red';
+    var squareSize;
+    var topLeftx;
+    var topLefty;
+    var boxNo = 11;
+    var boxSize;
+    var levelCount = 1;
+    var loader = 0;
+    var player;
+    var playeri;
+    var playerj;
+    var level;
+    var levelRows;
+    var levelCols;
+    var player_colour = 'red';
 
-        var walls = new Array(0);
+    var walls = new Array(0);
 
-        var centreX;
-        var centreY;
+    var centreX;
+    var centreY;
 
-        var isLeft = false;
-        var isRight = false;
-        var isSpace = false;
-        var isDown = false;
-           
+    var isLeft = false;
+    var isRight = false;
+    var isSpace = false;
+    var isDown = false;
+    var isKeyDown = false;
+
+    //Register click event
+    window.addEventListener("click", processClick, false);
+    
+    function processClick(){
+
+    }
     //Register resize event
-        window.addEventListener('resize', resizeCanvas, false);
-    //Run initial 'resize' to get screen size and draw
-        resizeCanvas();
+    window.addEventListener('resize', resizeCanvas, false);
 
-        function level_check(){
-        if(levelCount == 1){
-            level = levelOne.slice();
-        }
-        var levelRows = level.length;
-        var levelCols = level[0].length;
-        }
-            
+    //Run initial 'resize' to get screen size and draw
+    resizeCanvas();
+
+  //document.onkeydown = checkKey;
+    window.addEventListener("keydown", keyDown, false);
+    window.addEventListener("keyup", keyUp, false);
+
+    function keyDown(e){
+        isKeyDown = true;
+        if(e.keyCode =='37') isLeft = true;
+        if(e.keyCode == '39') isRight = true;
+        if(e.keyCode == '32') isSpace = true;
+        if(e.keyCode == '40') isDown = true;
+    }
+
+    function keyUp(e){
+        isKeyDown = false;
+        if(e.keyCode =='37') isLeft = false;
+        if(e.keyCode == '39') isRight = false;
+        if(e.keyCode == '32') isSpace = false;
+        if(e.keyCode == '40') isDown = false;
+    }
+    
+
+    function level_check(){
+    	if(levelCount == 1){
+        	level = levelOne.slice();
+    	}
+    	   levelRows = level.length;
+    	   levelCols = level[0].length;
+
+    }
+        
+    function win(){
+        levelCount++;
+        loader = 0;
+
+
+        //Maybe add some graphics here
+    }   
                 
     // Draw game.                 
     function draw() {
@@ -76,11 +116,19 @@
             level_check();
             loader = 1;
         }
+
         //Draw background
         ctx.drawImage(bgImage, topLeftx, topLefty, squareSize, squareSize);
 
         //Draw swappy squares
         ctx.drawImage(ssImage, topLeftx+(boxNo/2*boxSize)-(boxSize*3/2), topLefty, boxSize*3, boxSize);
+
+        //Draw level number
+        ctx.textAlign="right"; 
+        ctx.textBaseline = "bottom";
+        ctx.fillStyle = 'black';
+        ctx.font = "30px Arial";
+        ctx.fillText("Level " + levelCount, topLeftx+10*boxSize, topLefty+boxSize);
         
         //Draw transparent game background
         ctx.fillStyle = 'rgba(225,225,225,0.5)';
@@ -91,21 +139,88 @@
         ctx.lineWidth = '5';
         ctx.strokeRect(topLeftx+boxSize, topLefty+boxSize, squareSize-2*boxSize, squareSize-2*boxSize);
 
-        //ctx.fillStyle = player_colour;
-        //for(var i = 0; i<levelRows; i++){
-        //for(var j = 0; j<levelCols;j++){
-            //if(level[i][j]==8){
-            //playeri = 4-i;
-            //playerj = 4-j;
-            //player = fillRect(centreX, centreY, boxSize, boxSize);
-            //}
+        //Draw Player in centre and find offset values.
+        ctx.fillStyle = player_colour;
+        for(var i = 0; i<levelRows; i++){
+	        for(var j = 0; j<levelCols;j++){
+	            if(level[i][j]==8){
+                    var playeri = i;
+                    var playerj = j;
+		            var offseti = i-5;
+		            var offsetj = j-5;
+                    ctx.fillRect(centreX, centreY, boxSize, boxSize);
 
+                    ctx.strokeStyle = 'rgb(255,223,0)';
+                    ctx.lineWidth = '5';
+                    ctx.strokeRect(centreX, centreY, boxSize, boxSize);
+                    
+	            }
+	        }
+	    }
 
+        //Draw everything else
+        for(var i = 0; i<levelRows; i++){
+            for(var j = 0; j<levelCols;j++){
+                if(level[i][j]==0){
+                    ctx.fillStyle = 'black';
+                    ctx.fillRect(topLeftx+(j-offsetj)*boxSize, topLefty+(i-offseti)*boxSize, boxSize, boxSize);
+                }
+
+                if(level[i][j]==1){
+                    ctx.fillStyle = 'red';
+                    ctx.fillRect(topLeftx+(j-offsetj)*boxSize, topLefty+(i-offseti)*boxSize, boxSize, boxSize);
+                }
+
+                if(level[i][j]==2){
+                    ctx.fillStyle = 'blue';
+                    ctx.fillRect(topLeftx+(j-offsetj)*boxSize, topLefty+(i-offseti)*boxSize, boxSize, boxSize);
+                }
+
+                if(level[i][j]==3){
+                    ctx.fillStyle = 'green';
+                    ctx.fillRect(topLeftx+(j-offsetj)*boxSize, topLefty+(i-offseti)*boxSize, boxSize, boxSize);
+                }
+
+                if(level[i][j]==9){
+                    ctx.fillStyle = 'rgb(255,223,0)';
+
+                    ctx.fillRect(topLeftx+(j-offsetj)*boxSize, topLefty+(i-offseti)*boxSize, boxSize, boxSize);
+                    ctx.fillStyle = 'black';
+                    ctx.textAlign="center"; 
+                    ctx.textBaseline = "middle";
+                    ctx.font = "15px Arial";
+                    ctx.fillText("GOAL", topLeftx+(j-offsetj)*boxSize+0.5*boxSize, topLefty+(i-offseti)*boxSize+0.5*boxSize);
+                }
+
+            }
         }
+
+
         
-            // Runs each time the DOM window resize event fires.
-            // Resets the canvas dimensions to match window,
-            // then draws the new borders accordingly.
+        //Movement logic
+        if(isKeyDown) movementLogic();
+
+	    window.requestAnimationFrame(draw); //this is apparently smoother than setInterval, not sure why
+	}
+
+
+    function movementLogic(){
+        console.log(playeri);
+        console.log(playerj);
+
+        if(isRight && player_colour == 'red' && level[playerj][playeri+1]==1){
+            swap(playerj,playeri,playerj,playeri+1);
+        }
+
+        if(isLeft && player_colour == 'red' && level[playerj][playeri-1]==1){
+                swap(playerj,playeri,playerj,playeri-1);
+        }
+    }
+    
+
+    // Runs each time the DOM window resize event fires.
+    // Resets the canvas dimensions to match window,
+    // then draws the new borders accordingly.
     function resizeCanvas() {
         cvs.width = window.innerWidth;
         cvs.height = window.innerHeight;
@@ -114,32 +229,32 @@
             squareSize = window.innerHeight; 
             topLeftx = (window.innerWidth-window.innerHeight)/2;
             topLefty = 0;
-            }
+        }
         else{
             squareSize = window.innerWidth; 
             topLeftx = 0;
             topLefty = (window.innerHeight-window.innerWidth)/2;
-            }
+        }
 
-                //Sets size of the Swappy Squares
-            boxSize = squareSize/boxNo;
-            centreX = topLeftx+((squareSize/2)-(boxSize/2));
-            centreY = topLefty+((squareSize/2)-(boxSize/2));
+        //Sets size of the Swappy Squares
+        boxSize = squareSize/boxNo;
+        centreX = topLeftx+(5*boxSize);
+        centreY = topLefty+(5*boxSize);
 
-                draw();
-
-            }
+        //draw();
+    }
 
 
     function swap(x1,y1,x2,y2){
-        var temp = level[y1][x1];
-        level[y1][x1] = level[y2][x2];
-        level[y2][x2] = temp;
-        }
+        var temp = level[x1][y1];
+        level[x1][y1] = level[x2][y2];
+        level[x2][y2] = temp;
+    }
 
 
-    let game = setInterval(draw,100);
-    </script>
+    //let game = setInterval(draw,100);
+    window.requestAnimationFrame(draw);
+</script>
     
 </body>
 
