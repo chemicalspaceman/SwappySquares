@@ -57,6 +57,7 @@
     var isLeft = false;
     var isRight = false;
     var isSpace = false;
+    var isUp = false;
     var isDown = false;
     var isKeyDown = false;
 
@@ -81,6 +82,7 @@
         if(e.keyCode =='37') isLeft = true;
         if(e.keyCode == '39') isRight = true;
         if(e.keyCode == '32') isSpace = true;
+        if(e.keyCode == '38') isUp = true;
         if(e.keyCode == '40') isDown = true;
     }
 
@@ -89,6 +91,7 @@
         if(e.keyCode =='37') isLeft = false;
         if(e.keyCode == '39') isRight = false;
         if(e.keyCode == '32') isSpace = false;
+        if(e.keyCode == '38') isUp = false;
         if(e.keyCode == '40') isDown = false;
     }
     
@@ -143,7 +146,7 @@
         ctx.fillStyle = player_colour;
         for(var i = 0; i<levelRows; i++){
 	        for(var j = 0; j<levelCols;j++){
-	            if(level[i][j]==8){
+	            if(level[i][j]=="player"){
                     playeri = i;
                     playerj = j;
 		            offseti = i-5;
@@ -161,6 +164,22 @@
         //Draw everything else
         for(var i = 0; i<levelRows; i++){
             for(var j = 0; j<levelCols;j++){
+
+            	if (level[i][j] == "player"){
+            		ctx.fillStyle = player_colour;
+            	}
+            	else{
+            		ctx.fillStyle = level[i][j];
+            	}
+            	ctx.fillRect(topLeftx+(j-offsetj)*boxSize, topLefty+(i-offseti)*boxSize, boxSize, boxSize);
+            	if (level[i][j] == "gold"){
+            		ctx.fillStyle = 'black';
+                    ctx.textAlign="center"; 
+                    ctx.textBaseline = "middle";
+                    ctx.font = "15px Arial";
+                    ctx.fillText("GOAL", topLeftx+(j-offsetj)*boxSize+0.5*boxSize, topLefty+(i-offseti)*boxSize+0.5*boxSize);
+            	}
+            	/*
                 if(level[i][j]==0){
                     ctx.fillStyle = 'black';
                     ctx.fillRect(topLeftx+(j-offsetj)*boxSize, topLefty+(i-offseti)*boxSize, boxSize, boxSize);
@@ -191,6 +210,7 @@
                     ctx.font = "15px Arial";
                     ctx.fillText("GOAL", topLeftx+(j-offsetj)*boxSize+0.5*boxSize, topLefty+(i-offseti)*boxSize+0.5*boxSize);
                 }
+                */
 
             }
         }
@@ -205,15 +225,35 @@
 
 
     function movementLogic(){
-        console.log("playeri = ", playeri);
-        console.log("playerj = ", playerj);
+        //console.log("playeri = ", playeri);
+        //console.log("playerj = ", playerj);
 
-        if(isRight && player_colour == 'red' && level[playeri][playerj+1]==1){
-            swap(playeri,playerj,playeri,playerj+1);
+        if(isRight && playerj+1 < level[playeri].length){ 
+        	if (level[playeri][playerj+1] == player_colour){
+	            swap(playeri,playerj,playeri,playerj+1);
+	            isRight = false;
+	        }
         }
 
-        if(isLeft && player_colour == 'red' && level[playeri][playerj-1]==1){
-                swap(playeri,playerj,playeri,playerj-1);
+        if(isLeft && playerj-1 >= 0){ 
+        	if (level[playeri][playerj-1] == player_colour){
+	            swap(playeri,playerj,playeri,playerj-1);
+	            isLeft = false;
+	        }
+        }
+
+        if(isDown && playeri+1 < level.length){
+        	if (level[playeri+1][playerj] == player_colour){
+            	swap(playeri,playerj,playeri+1,playerj);
+            	isDown = false;
+            }
+        }
+
+        if(isUp && playeri-1 >= 0){
+        	if (level[playeri-1][playerj] == player_colour){
+            	swap(playeri,playerj,playeri-1,playerj);
+            	isUp = false;
+            }
         }
     }
     

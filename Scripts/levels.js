@@ -1,8 +1,8 @@
 var levelOne = [
- 	[0,0,0,0,0],
- 	[0,8,1,9,0],
- 	[0,0,2,0,0],
- 	[0,0,0,0,0]
+ 	["black","black","black","black","black"],
+ 	["black","player","red","gold","black"],
+ 	["black","red","blue","black","black"],
+ 	["black","red","red","red","black"]
  	];
 
 
