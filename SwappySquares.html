@@ -49,6 +49,11 @@
     var levelCols;
     var player_colour = 'red';
 
+    //vars for selecting and swapping the boxes by clicking
+    var boxDrawPositions = []; //positions where the boxes are drawn
+    var selectedBoxi = "none";
+    var selectedBoxj = "none";
+
     var walls = new Array(0);
 
     var centreX;
@@ -63,9 +68,45 @@
 
     //Register click event
     window.addEventListener("click", processClick, false);
-    
-    function processClick(){
 
+    //check if a point is in a box which has x,y,width,height
+    function boxCollide(x,y,box){
+    	if (x > box[0] && x < box[0] + box[2] && y > box[1] && y < box[1] + box[3]){
+    		return true;
+    	}
+    	else{
+    		return false;
+    	}
+    }
+    
+    function processClick(e){
+    	//find which box was just clicked on
+    	var foundBox = false;
+    	for (var i in boxDrawPositions){
+    		for (var j in boxDrawPositions[i]){
+    			//if you clicked in a box
+    			if (boxCollide(e.x,e.y,boxDrawPositions[i][j])){
+    				foundBox = true;
+    				//if there is no selected box then select this one
+    				//TODO add conditions, can you select player? can you select goal etc?
+    				if (selectedBoxi == "none"){
+    					selectedBoxi = i;
+    					selectedBoxj = j;
+    				}
+    				//if there is already a box selected
+    				//TODO add conditions on swap, do the two colours have to match etc?
+    				else{
+    					swap(i,j,selectedBoxi,selectedBoxj);
+    					selectedBoxi = "none";
+    					selectedBoxj = "none";
+    				}
+    			}
+    		}
+    	} //if you did not find a box at all
+    	if (!foundBox){
+    		selectedBoxi = "none";
+    		selectedBoxj = "none";
+    	}
     }
     //Register resize event
     window.addEventListener('resize', resizeCanvas, false);
@@ -98,10 +139,11 @@
 
     function level_check(){
     	if(levelCount == 1){
-        	level = levelOne.slice();
+        	level = levelOne.map(x => x.slice()); //apparently slice is not enough for arrays of arrays
     	}
     	   levelRows = level.length;
     	   levelCols = level[0].length;
+    	   boxDrawPositions = level.map(x => x.slice());
 
     }
         
@@ -171,14 +213,26 @@
             	else{
             		ctx.fillStyle = level[i][j];
             	}
-            	ctx.fillRect(topLeftx+(j-offsetj)*boxSize, topLefty+(i-offseti)*boxSize, boxSize, boxSize);
+            	var position_x = topLeftx+(j-offsetj)*boxSize;
+            	var position_y = topLefty+(i-offseti)*boxSize;
+            	ctx.fillRect(position_x, position_y, boxSize, boxSize);           	
+
             	if (level[i][j] == "gold"){
             		ctx.fillStyle = 'black';
                     ctx.textAlign="center"; 
                     ctx.textBaseline = "middle";
                     ctx.font = "15px Arial";
-                    ctx.fillText("GOAL", topLeftx+(j-offsetj)*boxSize+0.5*boxSize, topLefty+(i-offseti)*boxSize+0.5*boxSize);
+                    ctx.fillText("GOAL", position_x+0.5*boxSize, position_y+0.5*boxSize);
             	}
+
+            	boxDrawPositions[i][j] = [position_x, position_y, boxSize, boxSize]; //store the draw position
+
+            	//draw a token for which box is selected, this is just an example 
+            	if (i == selectedBoxi && j == selectedBoxj){
+            		ctx.fillStyle = "white";
+            		ctx.fillRect(position_x + 0.25*boxSize, position_y + 0.25*boxSize, 0.5*boxSize, 0.5*boxSize); 
+            	}
+
             	/*
                 if(level[i][j]==0){
                     ctx.fillStyle = 'black';
