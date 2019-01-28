@@ -1,11 +1,24 @@
-var levelOne = [
+var level1 = [
  	["black","black","black","black","black"],
- 	["black","player","red","gold","black"],
- 	["black","red","blue","black","black"],
- 	["black","red","red","red","black"]
- 	];
+ 	["black","player","green","gold","black"],
+ 	["black","black","blue","black","black"],
+ 	["black","black","black","black","black"]
+];
 
 
+var level2 = [
+ 	["black","black","black","black","black","black"],
+ 	["black","player","green","red","gold","black"],
+ 	["black","black","green","blue","black","black"],
+ 	["black","black","black","black","black","black"]
+];
+
+var level3 = [
+ 	["black","black","black","black","black"],
+ 	["black","player","green","gold","black"],
+ 	["black","black","blue","black","black"],
+ 	["black","black","black","black","black"]
+];
 
 
 
