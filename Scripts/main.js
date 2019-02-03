@@ -249,16 +249,19 @@
                 ctx.strokeRect(centreX, centreY, boxSize, boxSize);
             }
         }
-        
+        //check if any squares are swappable
+        if (check_possible_swaps()){
+            console.log("swaps exist");
+        }
+        else{
+            console.log("no more swaps");
+        }
         //Movement logic
         if(isKeyDown) movementLogic();
         window.requestAnimationFrame(draw); //this is apparently smoother than setInterval, not sure why
     }
 
     function drawText(){
-
-
-
         ctx.textAlign="center"; 
         ctx.textBaseline = "bottom";
         ctx.fillStyle = 'black';
@@ -277,120 +280,81 @@
             ctx.fillStyle = 'black';
             ctx.fillText("Try swapping the RED and BLUE squares!", topLeftx+5.5*boxSize, topLefty+2*boxSize);
             //ctx.fillText("You can only move through squares that are the same colour as you!", topLeftx+5.5*boxSize, topLefty+2.5*boxSize);
-        }
-
-        
+        }   
     }
 
     function movementLogic(){
         //console.log("playeri = ", playeri);
         //console.log("playerj = ", playerj);
         if(isRight && playerj+1 < level[playeri].length){ 
-            if (level[playeri][playerj+1] == player_colour){
-                swap(playeri,playerj,playeri,playerj+1);
-                moveCount++;
-                totalMoves++;
-                isRight = false;
-            }
-            else if (["darkred","darkgreen","darkblue"].includes(level[playeri][playerj+1]) ){
-                
-                var colourSave = level[playeri][playerj+1].replace('dark', '');
-                level[playeri][playerj+1] = player_colour;
-                player_colour = colourSave;
-
-                swap(playeri,playerj,playeri,playerj+1);
-                moveCount++;
-                totalMoves++;
-                isRight = false;
-            }
-            else if (level[playeri][playerj+1] == "gold"){
-                moveCount++;
-                totalMoves++;
-                win();
-                isRight = false;
-            }
+            try_moving(playeri,playerj,0,1);
+            isRight = false;
         }
         if(isLeft && playerj-1 >= 0){ 
-            if (level[playeri][playerj-1] == player_colour){
-                swap(playeri,playerj,playeri,playerj-1);
-                moveCount++;
-                totalMoves++;
-                isLeft = false;
-            }
-            else if (["darkred","darkgreen","darkblue"].includes(level[playeri][playerj-1]) ){
-                
-                var colourSave = level[playeri][playerj-1].replace('dark', '');
-                level[playeri][playerj-1] = player_colour;
-                player_colour = colourSave;
-
-                swap(playeri,playerj,playeri,playerj-1);
-                moveCount++;
-                totalMoves++;
-                isLeft = false;
-            }
-            else if (level[playeri][playerj-1] == "gold"){
-                moveCount++;
-                totalMoves++;
-                win();
-                isLeft = false;
-            }
+            try_moving(playeri,playerj,0,-1);
+            isLeft = false;
         }
         if(isDown && playeri+1 < level.length){
-            if (level[playeri+1][playerj] == player_colour){
-                swap(playeri,playerj,playeri+1,playerj);
-                moveCount++;
-                totalMoves++;
-                isDown = false;
-            }
-            else if (["darkred","darkgreen","darkblue"].includes(level[playeri+1][playerj]) ){
-                
-                var colourSave = level[playeri+1][playerj].replace('dark', '');
-                level[playeri+1][playerj] = player_colour;
-                player_colour = colourSave;
-
-                swap(playeri,playerj,playeri+1,playerj);
-                moveCount++;
-                totalMoves++;
-                isDown = false;
-            }
-            else if (level[playeri+1][playerj] == "gold"){
-                moveCount++;
-                totalMoves++;
-                win();
-                isDown = false;
-            }
+            try_moving(playeri,playerj,1,0);
+            isDown = false;
         }
         if(isUp && playeri-1 >= 0){
-            if (level[playeri-1][playerj] == player_colour){
-                swap(playeri,playerj,playeri-1,playerj);
-                moveCount++;
-                totalMoves++;
-                isUp = false;
-            }
-            else if (["darkred","darkgreen","darkblue"].includes(level[playeri-1][playerj]) ){
-                
-                var colourSave = level[playeri-1][playerj].replace('dark', '');
-                level[playeri-1][playerj] = player_colour;
-                player_colour = colourSave;
-
-                swap(playeri,playerj,playeri-1,playerj);
-                moveCount++;
-                totalMoves++;
-                isUp = false;
-            }
-            else if (level[playeri-1][playerj] == "gold"){
-                moveCount++;
-                totalMoves++;
-                win();
-                isUp = false;
-            }
+            try_moving(playeri,playerj,-1,0);
+            isUp = false;
         }
+
         if(isRestart){
             player_colour = startColour;
             loader = 0;
             moveCount = 0;
         }
     }
+
+    function try_moving(i,j, di, dj){
+        //if this is a regular move
+        if (level[i+di][j+dj] == player_colour){
+                swap(i,j,i+di,j+dj);
+                moveCount++;
+                totalMoves++;
+            }
+        //if you are moving to a colour change square
+        else if (["darkred","darkgreen","darkblue"].includes(level[i+di][j+dj]) ){            
+            var colourSave = level[i+di][j+dj].replace('dark', '');
+            level[i+di][j+dj] = player_colour;
+            player_colour = colourSave;
+
+            swap(i,j,i+di,j+dj);
+            moveCount++;
+            totalMoves++;
+        }
+        //if you are moving to the goal
+        else if (level[i+di][j+dj] == "gold"){
+            moveCount++;
+            totalMoves++;
+            win();
+        }
+    }
+
+    //check if any squares are swappable
+    function check_possible_swaps(){
+        for (var i = 0; i < level.length - 1; i++){
+            for (var j = 0; j < level[i].length - 1; j++){
+                var swappy_colours = ["red", "blue", "green"];
+                var a = level[i][j];
+                var b = level[i + 1][j];
+                var c = level[i][j + 1];
+                if (swappy_colours.includes(a) && swappy_colours.includes(b) && a != b){
+                    return true;
+                }
+                if (swappy_colours.includes(a) && swappy_colours.includes(c) && a != c){   
+                    return true;
+                }
+            }   
+        }
+        return false;
+    }
+
+
     
     // Runs each time the DOM window resize event fires.
     // Resets the canvas dimensions to match window,
