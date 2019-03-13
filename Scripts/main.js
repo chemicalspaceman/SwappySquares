@@ -28,6 +28,15 @@ img3.src = "Images/Swap2.png";
 var img4 = new Image();
 img4.src = "Images/Swap3.png";
 
+var doorImage = new Image();
+doorImage.src = "Images/Door.png";
+
+var lockImage = new Image();
+lockImage.src = "Images/Lock.png";
+
+var keyImage = new Image();
+keyImage.src = "Images/Key.png";
+
 
 var bgImage = new Image();
 bgImage.src = "Images/Background.png";
@@ -40,7 +49,7 @@ var topLeftx;
 var topLefty;
 var boxNo = 11;
 var boxSize;
-var levelCount = 1;
+var levelCount = 13;
 var loader = 0;
 var player;
 var playeri; //i is rows
@@ -261,29 +270,32 @@ function draw() {
 
                 //writting on gold box
                 if (level[i][j] == "gold"){
-                    ctx.fillStyle = 'black';
-                    ctx.textAlign="center"; 
-                    ctx.textBaseline = "middle";
-                    ctx.font = "15px Arial";
-                    ctx.fillText("GOAL", position_x+0.5*boxSize, position_y+0.5*boxSize);
+                    //ctx.fillStyle = 'black';
+                    //ctx.textAlign="center"; 
+                    //ctx.textBaseline = "middle";
+                    //ctx.font = "15px Arial";
+                    //ctx.fillText("GOAL", position_x+0.5*boxSize, position_y+0.5*boxSize);
+                    ctx.drawImage(doorImage, position_x, position_y, boxSize, boxSize);
                 }
 
                 //writting on key box
                 if (level[i][j] == "silver"){
-                    ctx.fillStyle = 'black';
-                    ctx.textAlign="center"; 
-                    ctx.textBaseline = "middle";
-                    ctx.font = "15px Arial";
-                    ctx.fillText("KEY", position_x+0.5*boxSize, position_y+0.5*boxSize);
+                    //ctx.fillStyle = 'black';
+                    //ctx.textAlign="center"; 
+                    //ctx.textBaseline = "middle";
+                    //ctx.font = "15px Arial";
+                    //ctx.fillText("KEY", position_x+0.5*boxSize, position_y+0.5*boxSize);
+                    ctx.drawImage(keyImage, position_x, position_y, boxSize, boxSize);
                 }
 
                 //writting on lock box
                 if (level[i][j] == "grey"){
-                    ctx.fillStyle = 'black';
-                    ctx.textAlign="center"; 
-                    ctx.textBaseline = "middle";
-                    ctx.font = "15px Arial";
-                    ctx.fillText("LOCK", position_x+0.5*boxSize, position_y+0.5*boxSize);
+                    //ctx.fillStyle = 'black';
+                    //ctx.textAlign="center"; 
+                    //ctx.textBaseline = "middle";
+                    //ctx.font = "15px Arial";
+                    //ctx.fillText("LOCK", position_x+0.5*boxSize, position_y+0.5*boxSize);
+                    ctx.drawImage(lockImage, position_x, position_y, boxSize, boxSize);
                 }
 
                 if (["darkred","darkgreen","darkblue"].includes(level[i][j])){

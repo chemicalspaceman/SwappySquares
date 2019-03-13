@@ -107,11 +107,11 @@ var level12 = [
 
 var level13 = [
 	["black","black","black","black","black","black","silver","black","black","black","black"],
-	["black","black","black","red","darkblue","black","black","white","black","black","black"],
- 	["black","silver","black","black","red","red","grey","blue","black","black","black"],
- 	["green","blue","green","player","darkgreen","black","blue","black","blue","red","gold"],
- 	["black","black","black","blue","black","black","grey","green","black","red","black"],
- 	["black","black","black","black","black","black","blue","white","black","blue","black"],
+	["black","black","black","red","darkgreen","black","black","white","black","black","black"],
+ 	["black","silver","black","black","red","red","grey","darkblue","black","black","black"],
+ 	["green","red","green","player","darkgreen","black","red","black","blue","red","gold"],
+ 	["black","black","black","blue","red","black","grey","green","black","red","black"],
+ 	["black","black","black","darkblue","black","black","blue","white","black","blue","black"],
  	["black","black","black","black","black","black","black","black","black","black","black"]
 ];
 
