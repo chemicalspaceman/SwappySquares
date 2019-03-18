@@ -46,7 +46,7 @@ ssImage.src = "Images/SS.png";
 
 //Variables
 var player_colour = 'red';
-var levelCount = 9;
+var levelCount = 1;
 
 var smooth = 0;
 var squareSize;
