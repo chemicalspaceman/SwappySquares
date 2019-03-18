@@ -2,6 +2,8 @@
 var audio = new Audio('Audio/menuAudio.mp3');
 var swapAudio = new Audio('Audio/swapAudio.wav')
 var whiteAudio = new Audio('Audio/whiteAudio.wav')
+var orangeAudio = new Audio('Audio/orangeAudio.wav')
+var purpleAudio = new Audio('Audio/purpleAudio.wav')
 var goalAudio = new Audio('Audio/goalAudio.wav')
 var keyAudio = new Audio('Audio/keyAudio.wav')
 var lockAudio = new Audio('Audio/lockAudio.wav')
@@ -18,38 +20,40 @@ var ctx = cvs.getContext('2d');
 
 var img1 = new Image();
 img1.src = "Images/PlayerMove.png";
-
 var img2 = new Image();
 img2.src = "Images/Swap1.png";
-
 var img3 = new Image();
 img3.src = "Images/Swap2.png";
-
 var img4 = new Image();
 img4.src = "Images/Swap3.png";
-
 var doorImage = new Image();
 doorImage.src = "Images/Door.png";
-
 var lockImage = new Image();
 lockImage.src = "Images/Lock.png";
-
+var stoneImage = new Image();
+stoneImage.src = "Images/Stone.png";
 var keyImage = new Image();
 keyImage.src = "Images/Key.png";
-
-
+var crackImage = new Image();
+crackImage.src = "Images/Crack.png";
+var bloomImage = new Image();
+bloomImage.src = "Images/Bloom.png";
 var bgImage = new Image();
 bgImage.src = "Images/Background.png";
-var squareSize;
 var ssImage = new Image();
 ssImage.src = "Images/SS.png";
+
+
 //Variables
+var player_colour = 'red';
+var levelCount = 9;
+
+var smooth = 0;
 var squareSize;
 var topLeftx;
 var topLefty;
 var boxNo = 11;
 var boxSize;
-var levelCount = 13;
 var loader = 0;
 var player;
 var playeri; //i is rows
@@ -57,7 +61,6 @@ var playerj; //j is columns
 var levelRows;
 var levelCols;
 var level = new Array();
-var player_colour = 'red';
 var startColour = player_colour;
 var moveCount = 0;
 var totalMoves = 0;
@@ -70,6 +73,7 @@ var selectedBoxj = "none";
 var walls = new Array(0);
 var centreX;
 var centreY;
+var hasJumped = false;
 var isLeft = false;
 var isRight = false;
 var isSpace = false;
@@ -190,9 +194,7 @@ function win(){
 
         //No clicks get carried over
         selectedBoxi = "none";
-        selectedBoxj = "none";
-    
-                        
+        selectedBoxj = "none";               
     //Maybe add some graphics here
 }   
                 
@@ -206,32 +208,10 @@ function draw() {
     ctx.drawImage(bgImage, topLeftx, topLefty, squareSize, squareSize);
     //Draw swappy squares
     ctx.drawImage(ssImage, topLeftx+(boxNo/2*boxSize)-(boxSize*3/2), topLefty, boxSize*3, boxSize);
-    //Draw level number 
-    ctx.textAlign="right"; 
-    ctx.textBaseline = "bottom";
-    ctx.fillStyle = 'black';
-    ctx.font = "30px Arial";
-    ctx.fillText("Level " + levelCount, topLeftx+10*boxSize, topLefty+boxSize);
-
-     //Draw move numbers
-    ctx.textAlign="left"; 
-    ctx.textBaseline = "bottom";
-    ctx.fillStyle = 'black';
-    ctx.font = "20px Arial";
-    ctx.fillText("Moves: " + moveCount, topLeftx+1*boxSize, topLefty+boxSize);
-    ctx.textBaseline = "top";
-    ctx.fillText("Total: " + totalMoves, topLeftx+boxSize, topLefty+10.2*boxSize);
-
-    //draw keys
-    ctx.textAlign="right";
-    ctx.textBaseline = "top";
-    ctx.fillStyle = 'gold';
-    ctx.font = "20px Arial";
-    ctx.fillText("Keys: " + keys, topLeftx+10*boxSize, topLefty+10.2*boxSize);
     
     //Draw transparent game background
-    ctx.fillStyle = 'black';
-    ctx.fillRect(topLeftx+boxSize, topLefty+boxSize, squareSize-2*boxSize, squareSize-2*boxSize);
+    //ctx.fillStyle = 'black';
+    //ctx.fillRect(topLeftx+boxSize, topLefty+boxSize, squareSize-2*boxSize, squareSize-2*boxSize);
 
 
     //Draw Player in centre and find offset values.
@@ -261,48 +241,59 @@ function draw() {
             var position_y = topLefty+(i-offseti)*boxSize;
 
         
-            if(position_x>=topLeftx+boxSize && position_x<topLeftx+10*boxSize && position_y>=topLefty+boxSize && position_y<topLefty+10*boxSize){
+            if(position_x>=topLeftx+boxSize && position_x<topLeftx+10*boxSize && position_y>=topLefty+boxSize && position_y<topLefty+10*boxSize && level[i][j] != "black"){
                 //DRAW ALL SQUARES INSIDE GAMEBOARD WITH A BLACK OUTLINE
                 ctx.fillRect(position_x, position_y, boxSize, boxSize); 
-                ctx.strokeStyle = 'black';
-                ctx.lineWidth = '5';
-                ctx.strokeRect(position_x, position_y, boxSize, boxSize);
+                
 
                 //writting on gold box
                 if (level[i][j] == "gold"){
-                    //ctx.fillStyle = 'black';
-                    //ctx.textAlign="center"; 
-                    //ctx.textBaseline = "middle";
-                    //ctx.font = "15px Arial";
-                    //ctx.fillText("GOAL", position_x+0.5*boxSize, position_y+0.5*boxSize);
-                    ctx.drawImage(doorImage, position_x, position_y, boxSize, boxSize);
+                    ctx.textAlign="center"; 
+                    ctx.textBaseline = "middle";
+                    ctx.fillStyle = 'black';
+                    var endSize = 0.4*boxSize;
+                    var endFont = String(endSize)+"px Impact"
+                    ctx.font = endFont;
+                    ctx.fillText("END", position_x+0.5*boxSize, position_y+0.5*boxSize);
+                    //ctx.drawImage(doorImage, position_x, position_y, boxSize, boxSize);
                 }
-
                 //writting on key box
-                if (level[i][j] == "silver"){
-                    //ctx.fillStyle = 'black';
-                    //ctx.textAlign="center"; 
-                    //ctx.textBaseline = "middle";
-                    //ctx.font = "15px Arial";
-                    //ctx.fillText("KEY", position_x+0.5*boxSize, position_y+0.5*boxSize);
+                else if (level[i][j] == "silver"){
                     ctx.drawImage(keyImage, position_x, position_y, boxSize, boxSize);
                 }
 
+                else if (level[i][j] == "tan"){
+                    ctx.drawImage(crackImage, position_x, position_y, boxSize, boxSize);
+                }
+                 else if (level[i][j] == "white"){
+                    smooth++;
+                    smooth = smooth%150;
+                    ctx.fillStyle = player_colour;
+                    ctx.globalAlpha = smooth*(0.8/150);
+                    ctx.fillRect(position_x , position_y , boxSize, boxSize);
+                    ctx.globalAlpha = 1;
+                    
+                    //ctx.drawImage(bloomImage, position_x, position_y, boxSize, boxSize);
+                }
+                else if (level[i][j] == "purple"){
+                    ctx.globalAlpha = 0.8;
+                    ctx.drawImage(stoneImage, position_x, position_y, boxSize, boxSize);
+                    ctx.globalAlpha = 1;
+                }
                 //writting on lock box
-                if (level[i][j] == "grey"){
-                    //ctx.fillStyle = 'black';
-                    //ctx.textAlign="center"; 
-                    //ctx.textBaseline = "middle";
-                    //ctx.font = "15px Arial";
-                    //ctx.fillText("LOCK", position_x+0.5*boxSize, position_y+0.5*boxSize);
+                else if (["lightcoral","lightgreen","lightblue","grey"].includes(level[i][j])){
                     ctx.drawImage(lockImage, position_x, position_y, boxSize, boxSize);
                 }
 
-                if (["darkred","darkgreen","darkblue"].includes(level[i][j])){
+                else if (["darkred","darkgreen","darkblue"].includes(level[i][j])){
             
                     ctx.fillStyle = level[i][j].replace('dark', '');
                     ctx.fillRect(position_x + 0.25*boxSize, position_y + 0.25*boxSize, 0.5*boxSize, 0.5*boxSize); 
                 }
+
+                ctx.strokeStyle = 'black';
+                ctx.lineWidth = '5';
+                ctx.strokeRect(position_x, position_y, boxSize, boxSize);
             }
             
             boxDrawPositions[i][j] = [position_x, position_y, boxSize, boxSize]; //store the draw position
@@ -319,10 +310,22 @@ function draw() {
         }
 
             //Draw game box outline
-            ctx.strokeStyle = 'rgba(225,225,225)';
+
+
+            ctx.globalAlpha = 0.02;
+            ctx.fillStyle = player_colour;
+            ctx.fillRect(topLeftx+boxSize, topLefty+boxSize, boxSize, squareSize-2*boxSize)
+            ctx.fillRect(topLeftx+2*boxSize, topLefty+boxSize, squareSize-3*boxSize, boxSize)
+            ctx.fillRect(topLeftx+2*boxSize, topLefty+9*boxSize, squareSize-3*boxSize, boxSize)
+            ctx.fillRect(topLeftx+9*boxSize, topLefty+2*boxSize, boxSize, squareSize-4*boxSize)
+            ctx.globalAlpha = 1;
+            //ctx.fillStyle = "white";
+            //ctx.fillRect(topLeftx+5*boxSize, topLefty+boxSize, boxSize, boxSize)
+            
+            ctx.strokeStyle = 'black';
             ctx.lineWidth = '5';
             ctx.strokeRect(topLeftx+boxSize, topLefty+boxSize, squareSize-2*boxSize, squareSize-2*boxSize);
-    
+            //ctx.strokeRect(topLeftx+5*boxSize, topLefty+boxSize, boxSize, boxSize)
 
           //Draw any text on level
         drawText();
@@ -335,17 +338,15 @@ function draw() {
 
         delay(function(){
             // do stuff
-
-        
             swal("No possible moves","Try again", {button: "Restart"})
             .then((value) => {
                 keys = keySave;
                 player_colour = startColour;
                 loader = 0;
                 moveCount = 0;
-                checkStop = false;
                 selectedBoxi = "none";
                 selectedBoxj = "none";
+                checkStop = false;
             });
         }, 1500 ); // end delay  
     }
@@ -356,52 +357,128 @@ function draw() {
 }
 
 function drawText(){
+    //Draw move numbers
+    ctx.textAlign="center"; 
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = 'black';
+    var scoreSize = 0.7*boxSize;
+    var scoreFont = String(scoreSize)+"px Impact"
+    ctx.font = scoreFont;
+    ctx.fillText(moveCount, topLeftx+5.5*boxSize, topLefty+1.55*boxSize);
+    ctx.textBaseline = "top";
+    ctx.fillText(totalMoves, topLeftx+5.5*boxSize, topLefty+10.2*boxSize);
+
+    //Draw level number 
+    ctx.textAlign="right"; 
+    ctx.textBaseline = "bottom";
+    ctx.fillStyle = 'black';
+    ctx.font = scoreFont;
+    ctx.fillText("lvl " + levelCount, topLeftx+10*boxSize, topLefty+boxSize);
+
+    //draw keys
+    ctx.drawImage(keyImage, topLeftx+0.6*boxSize, topLefty+0.1*boxSize, boxSize, boxSize);
+    ctx.textAlign="center";
+    ctx.textBaseline = "top";
+    ctx.fillStyle = 'silver';
+    ctx.font = scoreFont;
+    ctx.fillText(keys, topLeftx+1.6*boxSize, topLefty+0.25*boxSize);
+
+    //draw restart
+    ctx.textAlign="right"; 
+    var restartSize = 0.3*boxSize;
+    var restartFont = String(restartSize)+"px Charcoal"
+    ctx.font = restartFont;
+    ctx.fillStyle = "black";
+    ctx.fillText("Select: Mouse", topLeftx+10*boxSize, topLefty+10.7*boxSize);
+    ctx.fillText("Move: WASD", topLeftx+10*boxSize, topLefty+10.4*boxSize);
+    ctx.fillText("Restart: R", topLeftx+10*boxSize, topLefty+10.1*boxSize);
+     
+    
+////////////////////////////////////////////////////////////////////////////////////////
+
     ctx.textAlign="center"; 
     ctx.textBaseline = "bottom";
     ctx.fillStyle = 'black';
-    ctx.font = "14px Arial";
-    if(levelCount == 1 && level[playeri][playerj-1] == "black" && level[playeri][playerj+1] == "red"){
-        ctx.drawImage(img1,topLeftx+3*boxSize,topLefty+1.5*boxSize,5*boxSize,2*boxSize);
+
+    var commentSize = boxSize;
+    var commentFont = String(commentSize)+"px Impact"
+    ctx.font = commentFont;
+    
+    if(levelCount == 1 && moveCount == 0){
+        ctx.fillText("MOVE", topLeftx+5.5*boxSize, topLefty+4*boxSize);
+    }   
+    else if(levelCount == 2 && moveCount == 0){
+        ctx.fillText("YOU ARE RED", topLeftx+5.5*boxSize, topLefty+4*boxSize);
     }
-    else{
-        ctx.fillStyle = player_colour;
-        ctx.fillText("Press R to RESTART the level", topLeftx+5.5*boxSize, topLefty+10.5*boxSize);
-    }   
-
-    if(levelCount == 2 && level[playeri][playerj-1] == "black" && level[playeri][playerj+1] == "red"){
-        ctx.drawImage(img2,topLeftx+3*boxSize,topLefty+1.5*boxSize,5*boxSize,2*boxSize);
-        ctx.fillStyle = 'black';
-        //ctx.fillText("Try swapping the RED and BLUE squares!", topLeftx+5.5*boxSize, topLefty+2*boxSize);
-        //ctx.fillText("You can only move through squares that are the same colour as you!", topLeftx+5.5*boxSize, topLefty+2.5*boxSize);
-    }   
-
-    if(levelCount == 3 && level[playeri][playerj-1] == "black" && level[playeri][playerj+1] == "blue"){
-        ctx.drawImage(img3,topLeftx+3*boxSize,topLefty+1.5*boxSize,5*boxSize,2*boxSize);
-    }   
-
-    if(levelCount == 8 && level[playeri][playerj-1] == "black" && level[playeri][playerj+1] == "red"){
-        ctx.drawImage(img4,topLeftx+3*boxSize,topLefty+1.5*boxSize,5*boxSize,2*boxSize);
-    }  
-
+    else if(levelCount == 3){
+        if(moveCount == 0 && selectedBoxi != "1"){
+            ctx.fillText("CLICK BLUE", topLeftx+5.5*boxSize, topLefty+4*boxSize);
+        }
+        else if(moveCount == 0 && level[playeri][playerj+1] == "blue"){
+            ctx.fillText("CLICK GREEN", topLeftx+5.5*boxSize, topLefty+4*boxSize);
+        }
+        else {
+            ctx.fillText("BLUE + GREEN", topLeftx+5.5*boxSize, topLefty+3.2*boxSize);
+            ctx.fillText("MAKES RED", topLeftx+5.5*boxSize, topLefty+4.7*boxSize);
+        }
+    } 
+    else if(levelCount == 4){
+        if(player_colour == "red"){
+            ctx.fillText("YOU ARE RED", topLeftx+5.5*boxSize, topLefty+4*boxSize);
+        }
+        else if(player_colour == "blue"){
+            ctx.fillText("YOU ARE BLUE", topLeftx+5.5*boxSize, topLefty+4*boxSize);
+        } 
+    }
+    else if(levelCount == 5){
+        if(level[playeri][playerj+2] == "red"){
+            ctx.fillText("RED + BLUE", topLeftx+5.5*boxSize, topLefty+3.2*boxSize);
+            ctx.fillText("MAKES GREEN", topLeftx+5.5*boxSize, topLefty+4.7*boxSize);
+        }
+        else if(level[playeri][playerj+2] == "green"){
+            ctx.fillText("RED + GREEN", topLeftx+5.5*boxSize, topLefty+3.2*boxSize);
+            ctx.fillText("MAKES BLUE", topLeftx+5.5*boxSize, topLefty+4.7*boxSize);
+        }
+    }
+    else if(levelCount == 9){
+        if(moveCount == 4){
+            ctx.fillText("STOP", topLeftx+5.5*boxSize, topLefty+4*boxSize);
+        } 
+    } 
+    else if(levelCount == 12){
+        if(moveCount == 0){
+            ctx.fillText("BLOOM", topLeftx+5.5*boxSize, topLefty+4*boxSize);
+        } 
+    } 
+    else if(levelCount == 13){
+        if(moveCount == 0){
+            ctx.fillText("UNLOCK", topLeftx+5.5*boxSize, topLefty+4*boxSize);
+        } 
+    }
+    else if(levelCount == 16){
+        if(moveCount == 0){
+            ctx.fillText("SHIFT", topLeftx+5.5*boxSize, topLefty+4*boxSize);
+        }   
+    } 
 }
 
 function movementLogic(){
     //console.log("playeri = ", playeri);
     //console.log("playerj = ", playerj);
     if(isRight && playerj+1 < level[playeri].length){ 
-        try_moving(playeri,playerj,0,1);
+        try_moving(playeri,playerj,0,1,0,2);
         isRight = false;
     }
     if(isLeft && playerj-1 >= 0){ 
-        try_moving(playeri,playerj,0,-1);
+        try_moving(playeri,playerj,0,-1,0,-2);
         isLeft = false;
     }
     if(isDown && playeri+1 < level.length){
-        try_moving(playeri,playerj,1,0);
+        try_moving(playeri,playerj,1,0,2,0);
         isDown = false;
     }
     if(isUp && playeri-1 >= 0){
-        try_moving(playeri,playerj,-1,0);
+        try_moving(playeri,playerj,-1,0,-2,0);
         isUp = false;
     }
 
@@ -415,7 +492,7 @@ function movementLogic(){
     }
 }
 
-function try_moving(i,j, di, dj){
+function try_moving(i, j, di, dj, ddi, ddj){
     //if this is a regular move
     if (level[i+di][j+dj] == player_colour){
             selectedBoxi = "none";
@@ -439,7 +516,7 @@ function try_moving(i,j, di, dj){
       
 
         swap(i,j,i+di,j+dj);
-          level[i+di+1][j+dj] = player_colour;
+        level[i+di+1][j+dj] = player_colour;
         level[i+di-1][j+dj] = player_colour;
         level[i+di][j+dj+1] = player_colour;
         level[i+di][j+dj-1] = player_colour;
@@ -462,6 +539,93 @@ function try_moving(i,j, di, dj){
         moveCount++;
         totalMoves++;
         lockAudio.play()
+    }
+     else if (["lightcoral","lightgreen","lightblue"].includes(level[i+di][j+dj]) && keys > 0){            
+        var lockCheck = level[i+di][j+dj].replace('light', '');
+        lockCheck = lockCheck.replace('coral', 'red');
+        if (lockCheck == player_colour){
+
+            level[i+di][j+dj] = player_colour;
+            swap(i,j,i+di,j+dj);
+            keys--;
+            moveCount++;
+            totalMoves++;
+            lockAudio.play()
+        }
+    }
+    else if(level[i+di][j+dj] == "purple" && level[i+ddi][j+ddj] == player_colour){
+            swap(i+di,j+dj,i+ddi,j+ddj)
+            swap(i,j,i+di,j+dj);
+            moveCount++;
+            totalMoves++;
+            purpleAudio.play();
+    }
+
+
+    ////////////////////////////////////////////////
+    //Deal with tan 'jump' block
+    else if(level[i+di][j+dj] == "tan"){
+        if(level[i+ddi][j+ddj] == player_colour){
+            swap(i,j,i+ddi,j+ddj)
+            hasJumped = true;
+        }
+        else if(["lightcoral","lightgreen","lightblue"].includes(level[i+ddi][j+ddj]) && keys > 0){            
+            var lockCheck = level[i+ddi][j+ddj].replace('light', '');
+            lockCheck = lockCheck.replace('coral', 'red');
+            if (lockCheck == player_colour){
+                level[i+ddi][j+ddj] = player_colour;
+                swap(i,j,i+ddi,j+ddj);
+                hasJumped = true;
+                keys--;
+                lockAudio.play()
+            }
+        }
+        else if(level[i+ddi][j+ddj] == "silver"){
+            level[i+ddi][j+ddj] = player_colour;
+            keys++;
+            swap(i,j,i+ddi,j+ddj);
+            hasJumped = true;
+            keyAudio.play()
+        }
+        else if(level[i+ddi][j+ddj] == "grey" && keys > 0){
+            level[i+ddi][j+ddj] = player_colour;
+            swap(i,j,i+ddi,j+ddj);
+            keys--;
+            hasJumped = true;
+            lockAudio.play()
+        }
+        else if(["darkred","darkgreen","darkblue"].includes(level[i+ddi][j+ddj]) ){            
+            var colourSave = level[i+ddi][j+ddj].replace('dark', '');
+            level[i+ddi][j+ddj] = player_colour;
+            player_colour = colourSave;
+            swap(i,j,i+ddi,j+ddj);
+            hasJumped = true;
+        }
+        else if(level[i+ddi][j+ddj] == "white"){
+            level[i+ddi][j+ddj] = player_colour;
+          
+
+            swap(i,j,i+ddi,j+ddj);
+            level[i+ddi+1][j+ddj] = "tan";
+            level[i+ddi-1][j+ddj] = "tan";
+            level[i+ddi][j+ddj+1] = "tan";
+            level[i+ddi][j+ddj-1] = "tan";
+            hasJumped = true;
+            whiteAudio.play();
+        }
+        else if (level[i+ddi][j+ddj] == "gold"){
+            swap(i,j,i+ddi,j+ddj);
+            hasJumped = true;
+            goalAudio.play()
+            win();
+        }
+        if(hasJumped){
+            orangeAudio.play();
+            level[i+di][j+dj] = "black"
+            moveCount++;
+            totalMoves++;
+            hasJumped = false;
+        }
     }
     //if you are moving to the goal
     else if (level[i+di][j+dj] == "gold"){
@@ -489,7 +653,7 @@ function check_possible_swaps(){
         }   
     }
 
-    var other_colours = ["darkred","darkgreen","darkblue","gold","white","silver","grey"];
+    var other_colours = ["tan","purple","darkred","darkgreen","darkblue","gold","white","silver","grey","lightblue","lightgreen","lightcoral"];
     var around_player = [level[playeri+1][playerj],level[playeri-1][playerj],level[playeri][playerj+1],level[playeri][playerj-1]];
     if(around_player.includes(player_colour) || around_player.some(el => other_colours.includes(el))){
             return true;
