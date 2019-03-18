@@ -445,17 +445,17 @@ function drawText(){
             ctx.fillText("STOP", topLeftx+5.5*boxSize, topLefty+4*boxSize);
         } 
     } 
-    else if(levelCount == 12){
+    else if(levelCount == 13){
         if(moveCount == 0){
             ctx.fillText("BLOOM", topLeftx+5.5*boxSize, topLefty+4*boxSize);
         } 
     } 
-    else if(levelCount == 13){
+    else if(levelCount == 14){
         if(moveCount == 0){
             ctx.fillText("UNLOCK", topLeftx+5.5*boxSize, topLefty+4*boxSize);
         } 
     }
-    else if(levelCount == 16){
+    else if(levelCount == 17){
         if(moveCount == 0){
             ctx.fillText("SHIFT", topLeftx+5.5*boxSize, topLefty+4*boxSize);
         }   
