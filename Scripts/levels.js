@@ -42,10 +42,10 @@ var level5 = [
 //8
 var level6 = [
  	["black","black","black","black","black"],
- 	["black","player","red","red","black"],
- 	["black","blue","blue","red","black"],
- 	["black","green","red","red","black"],
- 	["black","gold","red","red","black"],
+ 	["black","player","blue","red","black"],
+ 	["black","red","blue","blue","black"],
+ 	["black","green","green","blue","black"],
+ 	["black","gold","blue","blue","black"],
  	["black","black","black","black","black"]
 ];
 
